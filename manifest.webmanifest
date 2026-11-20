@@ -1,0 +1,16 @@
+{
+  "name": "Recibo de Mercancía Masferre",
+  "short_name": "Recibo Masferre",
+  "description": "Recepción de mercancía contra factura con escáner de código de barras",
+  "lang": "es-MX",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#ffffff",
+  "theme_color": "#312883",
+  "icons": [
+    { "src": "img/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "img/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}
