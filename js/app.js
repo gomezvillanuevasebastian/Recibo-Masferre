@@ -92,7 +92,7 @@ function vistaInicio() {
   app.innerHTML = `
     <header class="barra-logo">
       <img src="img/masferre.png" alt="Masferre" class="logo">
-      <div class="titulo-app">Recibo de mercancía<small>Proveedor Truper</small></div>
+      <div class="titulo-app">Recibo de mercancía</div>
       <button class="icono" id="btnInfo" aria-label="Información">ⓘ</button>
     </header>
     <main class="contenido">
