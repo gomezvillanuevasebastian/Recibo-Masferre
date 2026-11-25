@@ -116,6 +116,10 @@ input, textarea { font: inherit; }
 .numeros b { font-size: 2rem; }
 .numeros .rojo { background: var(--rojo-claro); }
 .prod.completa .numeros > div:first-child { background: var(--verde-claro); color: var(--verde); }
+.total-manual { margin-top: 12px; padding-top: 12px; border-top: 1px dashed var(--borde); display: flex; flex-direction: column; gap: 8px; }
+.total-manual label { font-weight: 600; }
+.total-manual input { flex: 1; min-width: 0; padding: 12px 14px; border: 2px solid var(--borde); border-radius: 10px; font-size: 1.3rem; font-weight: 700; text-align: center; }
+.total-manual input:focus { outline: none; border-color: var(--naranja); }
 .ultimo-vacio { text-align: center; color: var(--tenue); }
 
 .pie-acciones { display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
@@ -174,7 +178,8 @@ input, textarea { font: inherit; }
 
 /* Tableta: aprovechar el ancho */
 @media (min-width: 760px) {
-  .escaneo { display: grid; grid-template-columns: 1fr 1fr; gap: 0 16px; align-items: start; }
+  .escaneo { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); gap: 0 16px; align-items: start; }
+  .escaneo > * { min-width: 0; }
   .escaneo .encabezado-rec, .escaneo .segmentos, .escaneo .pie-acciones { grid-column: 1 / -1; }
   .escaneo .ultimo { margin-top: 0; }
 }

@@ -451,8 +451,61 @@ function pintarUltimo(r) {
         <div><small>Cantidad recibida</small><b>${cant(p.rec)}</b></div>
         <div><small>Cantidad solicitada</small><b>${cant(p.sol)}</b></div>
         <div class="${p.rec > p.sol ? 'rojo' : ''}"><small>${p.rec > p.sol ? 'Sobrante' : 'Cantidad pendiente'}</small><b>${cant(Math.abs(p.sol - p.rec))}</b></div>
-      </div><div class="tenue">${esc(p.unidad)}</div>` : `<div class="numeros"><div class="rojo"><small>Recibido sin factura</small><b>${cant(x?.rec || 0)}</b></div></div>`}
+      </div><div class="tenue">${esc(p.unidad)}</div>
+      ${r.estado !== 'cerrada' ? `<div class="total-manual">
+        <label for="inTotal">¿Ya contaste todas? Escribe la cantidad total recibida</label>
+        <div class="fila">
+          <input id="inTotal" type="number" inputmode="numeric" min="0" step="any" placeholder="Ej. ${cant(p.sol)}" autocomplete="off">
+          <button class="btn primario" id="btnTotal">Guardar</button>
+        </div>
+        ${p.rec < p.sol ? `<button class="btn secundario ancho" id="btnCompleto">Llegó completo (${cant(p.sol)})</button>` : ''}
+      </div>` : ''}` : `<div class="numeros"><div class="rojo"><small>Recibido sin factura</small><b>${cant(x?.rec || 0)}</b></div></div>`}
     </div>`;
+  if (!p || r.estado === 'cerrada') return;
+  const inT = $('#inTotal', box);
+  const guardarTotal = () => {
+    const v = parseFloat(inT.value);
+    if (!(v >= 0)) { aviso('Escribe la cantidad total.', 'aviso'); inT.focus(); return; }
+    inT.blur();
+    fijarTotal(r.id, p.cod, v);
+  };
+  $('#btnTotal', box).onclick = guardarTotal;
+  inT.addEventListener('keydown', e => {
+    if (e.key !== 'Enter') return;
+    e.preventDefault();
+    // Si lo que entró es un código de barras (el escáner escribió en el campo), procesarlo como lectura
+    const t = inT.value.trim();
+    if (t.length >= 8 && buscarCodigo(t).length) { inT.value = ''; inT.blur(); procesarCodigo(r.id, t, 'escaner'); return; }
+    guardarTotal();
+  });
+  const bc = $('#btnCompleto', box);
+  if (bc) bc.onclick = () => fijarTotal(r.id, p.cod, p.sol);
+}
+
+function fijarTotal(id, cod, total) {
+  const r = leer(id);
+  if (r.estado === 'cerrada') return;
+  const p = r.partidas.find(x => x.cod === cod);
+  if (!p) return;
+  const antes = p.rec;
+  total = Math.round(total * 10000) / 10000;
+  if (total === antes) return;
+  r.log.push({ t: Date.now(), cod, q: Math.round((total - antes) * 10000) / 10000, c: '', o: 'total' });
+  p.rec = total;
+  let tipo, titulo, sub = `Clave ${p.codTxt || cod}: total recibido ${cant(total)} de ${cant(p.sol)}`;
+  if (total > p.sol + 1e-6) { tipo = 'aviso'; titulo = '¡Sobra mercancía!'; }
+  else if (total >= p.sol - 1e-6) { tipo = 'completo'; titulo = 'Partida completa'; }
+  else { tipo = 'ok'; titulo = 'Cantidad guardada'; sub += ` · faltan ${cant(p.sol - total)}`; }
+  guardar(r);
+  sonido(tipo);
+  ultimo = { ...(ultimo || {}), tipo, titulo, sub, cod, codigo: ultimo?.cod === cod ? ultimo.codigo : cod };
+  if (vista.nombre === 'escaneo') {
+    pintarBanner();
+    actualizarCabecera(r);
+    pintarUltimo(r);
+    const bd = $('#btnDeshacer'); if (bd) bd.disabled = false;
+    if (tipo === 'completo' && avance(r).pendientes === 0) pedidoCompleto(r);
+  }
 }
 
 function pedidoCompleto(r) {

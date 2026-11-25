@@ -1,5 +1,5 @@
 // Service worker: deja la app y el catálogo guardados para trabajar sin internet
-const VERSION = 'recibo-v2';
+const VERSION = 'recibo-v3';
 const ARCHIVOS = [
   './', 'index.html', 'manifest.webmanifest', 'css/styles.css',
   'js/app.js', 'js/factura.js', 'js/catalogo.js', 'js/escaner.js',
